@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kazgeowarningmobile/pages/news_page.dart';
@@ -53,17 +54,65 @@ Widget build(BuildContext context) {
         child: Column(
           
   children: [
+
+Container(
+    height: 320,
+  color:const Color(0xFFDFDFDF),
+  child: Stack(
+    children: [
+      // Фото внутри контейнера
+      Image.asset(
+        'assets/images/profile_back.png', // Путь к изображению
+        fit: BoxFit.cover, // Заполнение контейнера
+      ),
+      // Фото поверх контейнера
+      Positioned(
+        top: 120, // Положение по вертикали
+        left: 90, // Положение по горизонтали
+        child: ClipRRect(
+  borderRadius: BorderRadius.circular(100), // Установите радиус закругления здесь
+  child: CachedNetworkImage(
+    imageUrl: userData['imageUrl'],
+    placeholder: (context, url) => CircularProgressIndicator(),
+    fit: BoxFit.cover,
+    width: 200, 
+    errorWidget: (context, url, error) {
+      print("Ошибка загрузки изображения: $error");
+      return Icon(Icons.error); // Или любой другой виджет, который вы хотите показать в случае ошибки
+    },
+  ),
+),
+      ),
+    ],
+  ),
+),
+
+
+
     Container(
       
       margin: EdgeInsets.only(bottom: 16.0),
-      padding: EdgeInsets.only(top: 80.0, left: 24, right: 24),
+      padding: EdgeInsets.only(top: 10.0, left: 24, right: 24, bottom: 24),
       decoration: BoxDecoration(
         color: const Color(0xFFDFDFDF),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Color(0xFFE8E8E8), width: 2),
       ),
       child: Column(
   children: [
+
+
+
+
+    Padding(
+            padding: const EdgeInsets.only(top: 25.0, left: 00.0, bottom: 20.0),
+            child: Text(
+              'WELCOME BACK, ${userData['firstName'].toUpperCase()}!',
+              style: TextStyle(
+                color: Color(0xFF2A5725),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
     Container(
       margin: EdgeInsets.only(bottom: 16.0),
       padding: EdgeInsets.only(top: 10.0,bottom: 20, left: 24, right: 24),
@@ -76,30 +125,40 @@ Widget build(BuildContext context) {
         children: [
           TextField(
             decoration: InputDecoration(
-              labelText: 'Email',
-              hintText: userData['email'] ?? 'Enter your email',
+              labelText: 'First Name',
+              hintText: userData['firstName'] ?? 'Enter your first name',
             ),
-            controller: TextEditingController(text: userData['email']),
+            controller: TextEditingController(text: userData['firstName']),
           ),
           SizedBox(height: 16.0),
           TextField(
             decoration: InputDecoration(
-              labelText: 'Password',
-              hintText: userData['password'] ?? 'Enter your password',
+              labelText: 'Last Name',
+              hintText: userData['lastName'] ?? 'Enter your last name',
             ),
-            controller: TextEditingController(text: userData['password']),
+            controller: TextEditingController(text: userData['lastName']),
           ),
           SizedBox(height: 16.0),
           TextField(
             decoration: InputDecoration(
-              labelText: 'Phone',
-              hintText: userData['phone'] ?? 'Enter your phone number',
+              labelText: 'Middle Name',
+              hintText: userData['middleName'] ?? 'Enter your middle name',
             ),
-            controller: TextEditingController(text: userData['phone']),
+            controller: TextEditingController(text: userData['middleName']),
           ),
         ],
       ),
     ),
+    Padding(
+            padding: const EdgeInsets.only(top: 5.0, left: 00.0, bottom: 20.0),
+            child: Text(
+              'CONTACT INFORMATION',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+              ),
+            ),
+          ),
     Container(
       margin: EdgeInsets.only(bottom: 16.0),
       padding: EdgeInsets.only(top: 0.0, left: 24,bottom: 20, right: 24),
@@ -120,22 +179,32 @@ Widget build(BuildContext context) {
           SizedBox(height: 16.0),
           TextField(
             decoration: InputDecoration(
-              labelText: 'Password',
-              hintText: userData['password'] ?? 'Enter your password',
+              labelText: 'Phone Number',
+              hintText: userData['phoneNumber'] ?? 'Enter your phone number',
             ),
-            controller: TextEditingController(text: userData['password']),
+            controller: TextEditingController(text: userData['phoneNumber']),
           ),
           SizedBox(height: 16.0),
           TextField(
             decoration: InputDecoration(
-              labelText: 'Phone',
-              hintText: userData['phone'] ?? 'Enter your phone number',
+              labelText: 'Birth Date',
+              hintText: userData['birthDate'] ?? 'Enter your birth date',
             ),
-            controller: TextEditingController(text: userData['phone']),
+            controller: TextEditingController(text: userData['birthDate']),
           ),
         ],
       ),
     ),
+     Padding(
+            padding: const EdgeInsets.only(top: 5.0, left: 00.0, bottom: 20.0),
+            child: Text(
+              'NOTIFICATION SETTINGS',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+              ),
+            ),
+          ),
     Container(
       margin: EdgeInsets.only(bottom: 16.0),
       padding: EdgeInsets.only(top: 0.0, left: 24,bottom: 20, right: 24),
@@ -148,30 +217,94 @@ Widget build(BuildContext context) {
         children: [
           TextField(
             decoration: InputDecoration(
-              labelText: 'Email',
-              hintText: userData['email'] ?? 'Enter your email',
+              labelText: 'Location',
+              hintText: userData['locationId'] ?? 'Enter your location',
             ),
-            controller: TextEditingController(text: userData['email']),
+            controller: TextEditingController(text: userData['locationId']),
           ),
+         
           SizedBox(height: 16.0),
-          TextField(
-            decoration: InputDecoration(
-              labelText: 'Password',
-              hintText: userData['password'] ?? 'Enter your password',
-            ),
-            controller: TextEditingController(text: userData['password']),
-          ),
-          SizedBox(height: 16.0),
-          TextField(
-            decoration: InputDecoration(
-              labelText: 'Phone',
-              hintText: userData['phone'] ?? 'Enter your phone number',
-            ),
-            controller: TextEditingController(text: userData['phone']),
-         ),
+          
+         Container(
+                margin: EdgeInsets.only(bottom: 16.0),
+                padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Color(0xFFE8E8E8), width: 2),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Email'),
+                      ],
+                    ),
+                    userData['notifyEmail'] ?? false
+                      ? ElevatedButton(
+                          
+                          onPressed: () {},
+                          child: Text('On'),
+                        )
+                      : ElevatedButton(
+                          onPressed: () {},
+                          child: Text('Off'),
+                        ),
+                        Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('SMS'),
+                      ],
+                    ),
+                    userData['notifySms'] ?? false
+                      ? ElevatedButton(
+                          onPressed: () {},
+                          child: Text('On'),
+                        )
+                      : ElevatedButton(
+                          onPressed: () {},
+                          child: Text('Off'),
+                        ),
+                  ],
+                ),
+              ),
+              
         ],
+        
+      ),
+      
+    ),
+   Row(
+  mainAxisAlignment: MainAxisAlignment.spaceAround,
+  children: [
+    Expanded(
+      child: ElevatedButton(
+        onPressed: () {},
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Color(0xFF727272),
+          foregroundColor: Colors.white, // Серый цвет для первой кнопки
+        ),
+        child: Text('LOG OFF'),
       ),
     ),
+    SizedBox(width: 8), // Добавляем небольшое расстояние между кнопками
+    Expanded(
+      child: TextButton(
+        onPressed: () {},
+        style: TextButton.styleFrom(
+          backgroundColor: Color(0xFF2A5725),
+          foregroundColor: Colors.white, // Зеленый цвет для второй кнопки
+        ),
+        child: Text('SAVE'),
+      ),
+    )
+  ],
+),
+
+
+
   ],
 ),)
   ],),),
