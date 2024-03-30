@@ -28,7 +28,7 @@ class LoginPage extends StatelessWidget {
     try {
       // Отправьте POST-запрос на ваш бэкэнд
       var response = await http.post(
-        Uri.parse('http://192.168.0.63:8011/internal/api/public/user/v1/login'),
+        Uri.parse('http://192.168.0.11:8011/internal/api/public/user/v1/login'),
         body: jsonData,
         headers: {'Content-Type': 'application/json'},
       );

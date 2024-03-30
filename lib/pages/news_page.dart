@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kazgeowarningmobile/pages/news_item_page.dart';
 import 'package:kazgeowarningmobile/pages/notifications_page.dart';
 import 'package:kazgeowarningmobile/pages/profile_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,12 +12,14 @@ class News {
   final String subtitle;
   final DateTime  publicationDate;
   final String imageUrl;
+  final int id;
 
   News({
     required this.title,
     required this.subtitle,
     required this.publicationDate,
     required this.imageUrl,
+    required this.id
   });
 }
 
@@ -58,6 +61,7 @@ class _NewsPage extends State<NewsPage> {
           subtitle: json['subtitle'],
           publicationDate: DateTime.parse(json['publicationDate']),
           imageUrl: json['imageUrl'],
+           id: json['id'],
         )).toList();
       });
     } else {
@@ -79,7 +83,7 @@ class _NewsPage extends State<NewsPage> {
                     padding: EdgeInsets.only(top: 0.0, left:24, right: 24),
             decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(24),
                       border: Border.all(color: Color(0xFFE8E8E8), width: 2),
                     ),
             
@@ -115,12 +119,21 @@ class _NewsPage extends State<NewsPage> {
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               child: Column(
                 children: news.map((newsItem) {
-                  return Container(
+                  return GestureDetector(
+                  onTap: () {
+                                // Обработка нажатия, например, переход на другую страницу
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => NewsItemPage(newsItem.id)),
+                                );
+                              },
+
+                  child: Container(
                     margin: EdgeInsets.only(bottom: 16.0),
                     padding: EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: Color(0xFFE8E8E8), width: 2),
                     ),
                     child: Column(
@@ -129,6 +142,20 @@ class _NewsPage extends State<NewsPage> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(30),
           ),
+ClipRRect(
+  borderRadius: BorderRadius.circular(30), // Установите радиус закругления здесь
+  child: CachedNetworkImage(
+    imageUrl: newsItem.imageUrl,
+    placeholder: (context, url) => CircularProgressIndicator(),
+    fit: BoxFit.cover,
+    width: MediaQuery.of(context).size.width, 
+    errorWidget: (context, url, error) {
+      print("Ошибка загрузки изображения: $error");
+      return Icon(Icons.error); // Или любой другой виджет, который вы хотите показать в случае ошибки
+    },
+  ),
+),
+
                         SizedBox(height: 12.0),
                         Text(
                           newsItem.title,
@@ -146,7 +173,7 @@ class _NewsPage extends State<NewsPage> {
                         ),
                         SizedBox(height: 8.0),
                         Text(
-                          'Published: ${newsItem.publicationDate}',
+                          'Published: ${newsItem.publicationDate.toString().substring(0, 16)}',
                           style: TextStyle(
                             color: Colors.green,
                             fontSize: 14.0,
@@ -154,6 +181,7 @@ class _NewsPage extends State<NewsPage> {
                         ),
                       ],
                     ),
+                  ),
                   );
                 }).toList(),
               ),
