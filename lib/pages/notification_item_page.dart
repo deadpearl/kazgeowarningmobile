@@ -2,39 +2,29 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kazgeowarningmobile/pages/news_page.dart';
-import 'package:kazgeowarningmobile/pages/notification_item_page.dart';
 import 'package:kazgeowarningmobile/pages/profile_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'notifications_page.dart';
 
-class AlertNotification {
-  final String senderEmail;
-  final String text;
-  final bool seen;
-  final int id;
-  final String notificationType;
+class NotificationItemPage extends StatefulWidget {
+   final int notificationId;
+   final String notificationType; // Идентификатор уведомления
 
-  AlertNotification({
-    required this.senderEmail,
-    required this.text,
-    required this.seen,
-    required this.id,
-    required this.notificationType
-  });
-}
-
-class NotificationsPage extends StatefulWidget {
+  NotificationItemPage(this.notificationId, this.notificationType);
   @override
-  _NotificationsPage createState() => _NotificationsPage();
+  _NotificationItemPage createState() => _NotificationItemPage();
 }
 
-class _NotificationsPage extends State<NotificationsPage> {
-  List<AlertNotification> notifications = [];
-  var userData;
+class _NotificationItemPage extends State<NotificationItemPage> {
+  var notification;
  int _selectedIndex = -1;
+ 
  
   @override
   void initState() {
     super.initState();
+    print('notificationId: ${widget.notificationId}');
+    print('notificationType: ${widget.notificationType}');
     fetchNotifications();
   }
 
@@ -42,122 +32,126 @@ class _NotificationsPage extends State<NotificationsPage> {
     Future<void> fetchNotifications() async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       var token = prefs.getString('token');
-      var email = prefs.getString('email');
 
       final Map<String, String> headers = {'x-auth-token': token!};
   
       final response = await http.get(
-        Uri.parse('http://192.168.0.11:8011/internal/api/notification/service/all?email=$email'),
+        Uri.parse('http://192.168.0.11:8011/internal/api/notification/service/get-by-id?id=${widget.notificationId}&notificationType=${widget.notificationType}'),
         headers: headers,
       );
     print(response);
     if (response.statusCode == 200) {
-      List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
-      print(data);
-      setState(() {
-        notifications = data.map((json) => AlertNotification(
-          senderEmail: 'kazgeowarning',
-          text: json['text'],
-          seen: json['seen'],
-          id: json['id'],
-          notificationType:  json['notificationType']
-        )).toList();
-      });
-    } else {
-      throw Exception('Failed to load notifications');
-    }
+        var responseData = json.decode(utf8.decode(response.bodyBytes));
+        setState(() {
+          notification = responseData; // Сохраняем данные о пользователе
+          print('PROFILE: ${notification}');
+        });
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+      }
   }
 
 @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFDFDFDF),
-
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 45.0, left: 120.0, bottom: 15.0),
-            child: Text(
-              'Notifications',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: notifications.length,
-              itemBuilder: (context, index) {
-                final notification = notifications[index];
-
-               return GestureDetector(
-        onTap: () {
-          // Обработчик нажатия на уведомление
-          // Здесь вы можете отправить ID уведомления на другую страницу
-          Navigator.push(
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: const Color(0xFFDFDFDF),
+    body: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 45.0, left: 20.0, bottom: 15.0, right: 20.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  // Ваш обработчик кнопки "назад"
+                   Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => NotificationItemPage(notification.id, notification.notificationType), // Передаем ID на другую страницу
+              builder: (context) => NotificationsPage(), // Передаем ID на другую страницу
             ),
-          );
-        },
-
-
-                child: Container(
-                  margin: const EdgeInsets.only(right: 20.0, left: 20.0, top:8.0),
-                  padding: const EdgeInsets.all(18.0),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: const Color(0xFFE8E8E8), width: 5),
-                  ),
-                  child: Row(
-                    children: [
-                      Image(image: AssetImage('assets/images/Avatar_green.png')),
-                      // Placeholder for image/icon
-                     
-                      SizedBox(width: 15),
-                      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Kazgeowarning',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16
+                   );
+                },
               ),
+              Text(
+                'Notifications',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(width: 40), // Просто для выравнивания
+            ],
+          ),
+        ),
+        Expanded(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 48.0),
+            padding: const EdgeInsets.all(18.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: const Color(0xFFE8E8E8), width: 5),
             ),
-                          SizedBox(height: 12),
-                          Text(
-                            notification.text.length > 70
-                                ? '${notification.text.substring(0, 70)}...'
-                                : notification.text,
-                                softWrap: true,
-                                style: TextStyle(
-                color: Colors.grey,
-                fontSize: 16
-              ),
-                          ),
-                        ],
-                        
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
                       ),
+                      child: Image(image: AssetImage('assets/images/Avatar_green.png')),
+                    ),
+                    SizedBox(width: 12), // Добавляем отступ между изображением и текстом
+                    Text(
+                      'Kazgeowarning',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(width: 15),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      
+                      SizedBox(height: 12),
+                      Container(
+                        padding: EdgeInsets.only(left: 18, right: 15),
+                        width: double.infinity,
+                        child: notification != null && notification['text'] != null
+                          ? Text(
+                              notification['text'],
+                              softWrap: true,
+                              overflow: TextOverflow.visible,
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 16,
+                              ),
+                            )
+                          : CircularProgressIndicator(),
                       ),
                     ],
-                    
                   ),
-                )
-               );
-              },
+                ),
+              ],
             ),
           ),
-       ],
-      ),
-      
+        ),
+      ],
+    ),
+
       
       
       
