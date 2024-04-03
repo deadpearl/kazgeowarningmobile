@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kazgeowarningmobile/pages/map_realtime_page.dart';
 import 'package:kazgeowarningmobile/pages/news_item_page.dart';
 import 'package:kazgeowarningmobile/pages/notifications_page.dart';
 import 'package:kazgeowarningmobile/pages/profile_page.dart';
@@ -30,6 +31,7 @@ class NewsPage extends StatefulWidget {
 }
 
 class _NewsPage extends State<NewsPage> {
+  List<News> filteredNews = [];
   List<News> news = [];
   var userData;
  int _selectedIndex = -1;
@@ -41,33 +43,53 @@ class _NewsPage extends State<NewsPage> {
   }
 
 
-    Future<void> fetchNews() async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      var token = prefs.getString('token');
-
-      final Map<String, String> headers = {'x-auth-token': token!};
-  
-      final response = await http.get(
-        Uri.parse('http://192.168.0.11:8011/internal/api/news'),
-        headers: headers,
-      );
-    print(response);
-    if (response.statusCode == 200) {
-      List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
-      print(data);
-      setState(() {
-        news = data.map((json) => News(
-          title: json['title'],
-          subtitle: json['subtitle'],
-          publicationDate: DateTime.parse(json['publicationDate']),
-          imageUrl: json['imageUrl'],
-           id: json['id'],
-        )).toList();
-      });
+void onSearchTextChanged(String text) {
+  setState(() {
+    if (text.isEmpty) {
+      // Если текстовое поле пустое, показать все новости
+      filteredNews = news;
     } else {
-      throw Exception('Failed to load news');
+      // Фильтровать новости по введенному тексту
+      filteredNews = news.where((news) =>
+          news.title.toLowerCase().contains(text.toLowerCase())).toList();
     }
+  });
+}
+
+  Future<void> fetchNews() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var token = prefs.getString('token');
+
+  final Map<String, String> headers = {'x-auth-token': token!};
+
+  final response = await http.get(
+    Uri.parse('http://192.168.0.63:8011/internal/api/news'),
+    headers: headers,
+  );
+  
+  print(response);
+  if (response.statusCode == 200) {
+    List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
+    print(data);
+
+    // Преобразование данных в объекты новостей
+    List<News> fetchedNews = data.map((json) => News(
+      title: json['title'],
+      subtitle: json['subtitle'],
+      publicationDate: DateTime.parse(json['publicationDate']),
+      imageUrl: json['imageUrl'],
+      id: json['id'],
+    )).toList();
+
+    setState(() {
+      news = fetchedNews; 
+      filteredNews = fetchedNews; 
+    });
+  } else {
+    throw Exception('Failed to load news');
   }
+}
+
 
 
   @override
@@ -77,40 +99,50 @@ class _NewsPage extends State<NewsPage> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 55.0, left: 24.0,  right: 24),
-            child: Container(
-            margin: EdgeInsets.only(bottom: 16.0),
-                    padding: EdgeInsets.only(top: 0.0, left:24, right: 24),
-            decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Color(0xFFE8E8E8), width: 2),
-                    ),
-            
-            child: Stack( 
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                ),
-                Align(
-                  alignment: Alignment.center,
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Search...',
-                      border: InputBorder.none,
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 8.0),
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                ),
-              ],
+  padding: const EdgeInsets.only(top: 55.0, left: 24.0, right: 24),
+  child: Container(
+    margin: EdgeInsets.only(bottom: 16.0),
+    padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(24),
+      border: Border.all(color: Color(0xFFE8E8E8), width: 2),
+    ),
+    child: Row(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left:5,right: 10.0, ),
+          child: Image.asset(
+            'assets/images/filter.png', // Путь к изображению фильтра
+            width: 40,
+            height: 30,
+          ),
+        ),
+        Expanded(
+          child: TextField(
+            onChanged: onSearchTextChanged,
+            decoration: InputDecoration(
+              hintText: 'Search...',
+              border: InputBorder.none,
+              filled: true,
+              fillColor: Colors.white,
+              contentPadding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
             ),
           ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 16.0,right:15),
+          child: Image.asset(
+            'assets/images/search.png', // Путь к изображению поиска
+            width: 24,
+            height: 24,
           ),
+        ),
+      ],
+    ),
+  ),
+),
+
           
 
           
@@ -118,7 +150,7 @@ class _NewsPage extends State<NewsPage> {
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               child: Column(
-                children: news.map((newsItem) {
+                children: filteredNews.map((newsItem) {
                   return GestureDetector(
                   onTap: () {
                                 // Обработка нажатия, например, переход на другую страницу
@@ -223,7 +255,7 @@ ClipRRect(
             icon: Padding(
               padding: EdgeInsets.symmetric(vertical: 12.0), // Увеличиваем отступ по вертикали
               child: Image(
-                image: AssetImage('assets/images/notification.png'),
+                image: AssetImage('assets/images/bell_withnot.png'),
                 height: 24, // Задаем высоту иконки
               ),
             ),
@@ -256,6 +288,9 @@ void _onItemTapped(int index) {
       break;
     case 1:
     print('FIRE:');
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MapRealtimePage()));
       // Обработка нажатия на элемент "Search"
       // Навигация на соответствующую страницу или выполнение действия
       break;
