@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kazgeowarningmobile/pages/map_realtime_page.dart';
 import 'package:kazgeowarningmobile/pages/news_page.dart';
 import 'package:kazgeowarningmobile/pages/notification_item_page.dart';
 import 'package:kazgeowarningmobile/pages/profile_page.dart';
@@ -47,7 +48,7 @@ class _NotificationsPage extends State<NotificationsPage> {
       final Map<String, String> headers = {'x-auth-token': token!};
   
       final response = await http.get(
-        Uri.parse('http://192.168.0.11:8011/internal/api/notification/service/all?email=$email'),
+        Uri.parse('http://192.168.0.63:8011/internal/api/notification/service/all?email=$email'),
         headers: headers,
       );
     print(response);
@@ -117,6 +118,11 @@ class _NotificationsPage extends State<NotificationsPage> {
                   ),
                   child: Row(
                     children: [
+                      CircleAvatar(
+          radius: 5, // Радиус круга
+          backgroundColor: notification.seen ? Colors.transparent : Color(0xFF141C0C), // Цвет круга в зависимости от статуса seen
+          child: notification.seen ? Container() : Text(''), // Пустой контейнер или текст, в зависимости от вашего предпочтения
+        ),
                       Image(image: AssetImage('assets/images/Avatar_green.png')),
                       // Placeholder for image/icon
                      
@@ -196,8 +202,8 @@ class _NotificationsPage extends State<NotificationsPage> {
             icon: Padding(
               padding: EdgeInsets.symmetric(vertical: 12.0), // Увеличиваем отступ по вертикали
               child: Image(
-                image: AssetImage('assets/images/bell_active.png'),
-                height: 28, // Задаем высоту иконки
+                image: AssetImage('assets/images/bell_activewithnot.png'),
+                height: 30, // Задаем высоту иконки
               ),
             ),
             label: 'Notifications',
@@ -230,6 +236,9 @@ void _onItemTapped(int index) {
       break;
     case 1:
     print('FIRE:');
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MapRealtimePage()));
       // Обработка нажатия на элемент "Search"
       // Навигация на соответствующую страницу или выполнение действия
       break;

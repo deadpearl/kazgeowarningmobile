@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kazgeowarningmobile/pages/map_realtime_page.dart';
 import 'package:kazgeowarningmobile/pages/news_page.dart';
 import 'package:kazgeowarningmobile/pages/profile_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,7 +37,7 @@ class _NotificationItemPage extends State<NotificationItemPage> {
       final Map<String, String> headers = {'x-auth-token': token!};
   
       final response = await http.get(
-        Uri.parse('http://192.168.0.11:8011/internal/api/notification/service/get-by-id?id=${widget.notificationId}&notificationType=${widget.notificationType}'),
+        Uri.parse('http://192.168.0.63:8011/internal/api/notification/service/get-by-id?id=${widget.notificationId}&notificationType=${widget.notificationType}'),
         headers: headers,
       );
     print(response);
@@ -49,7 +50,52 @@ class _NotificationItemPage extends State<NotificationItemPage> {
       } else {
         print('Request failed with status: ${response.statusCode}');
       }
+
+    // We are sending a request to mark the notification as viewed, depending on the type of notification
+    if (widget.notificationType == 'report') {
+      await markReportAsSeen(widget.notificationId);
+    } else if (widget.notificationType == 'alert') {
+      await markAlertAsSeen(widget.notificationId);
+    }
+  
+
   }
+
+
+Future<void> markReportAsSeen(int id) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var token = prefs.getString('token');
+
+  final Map<String, String> headers = {'x-auth-token': token!};
+
+  final response = await http.put(
+    Uri.parse('http://192.168.0.63:8011/internal/api/notification/service/report/seen/$id'),
+    headers: headers,
+  );
+  if (response.statusCode == 200) {
+    print('Report marked as seen');
+  } else {
+    print('Failed to mark report as seen');
+  }
+}
+
+Future<void> markAlertAsSeen(int id) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var token = prefs.getString('token');
+
+  final Map<String, String> headers = {'x-auth-token': token!};
+
+  final response = await http.put(
+    Uri.parse('http://192.168.0.63:8011/internal/api/notification/service/alert/seen/$id'),
+    headers: headers,
+  );
+  if (response.statusCode == 200) {
+    print('Alert marked as seen');
+  } else {
+    print('Failed to mark alert as seen');
+  }
+}
+
 
 @override
 Widget build(BuildContext context) {
@@ -190,7 +236,7 @@ Widget build(BuildContext context) {
             icon: Padding(
               padding: EdgeInsets.symmetric(vertical: 12.0), // Увеличиваем отступ по вертикали
               child: Image(
-                image: AssetImage('assets/images/bell_active.png'),
+                image: AssetImage('assets/images/bell_activewithnot.png'),
                 height: 28, // Задаем высоту иконки
               ),
             ),
@@ -224,6 +270,9 @@ void _onItemTapped(int index) {
       break;
     case 1:
     print('FIRE:');
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MapRealtimePage()));
       // Обработка нажатия на элемент "Search"
       // Навигация на соответствующую страницу или выполнение действия
       break;
