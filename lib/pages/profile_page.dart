@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kazgeowarningmobile/pages/map_realtime_page.dart';
 import 'package:kazgeowarningmobile/pages/news_page.dart';
 import 'package:kazgeowarningmobile/pages/notifications_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -390,6 +391,9 @@ void _onItemTapped(int index) {
       break;
     case 1:
     print('FIRE:');
+     Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MapRealtimePage()));
       // Обработка нажатия на элемент "Search"
       // Навигация на соответствующую страницу или выполнение действия
       break;

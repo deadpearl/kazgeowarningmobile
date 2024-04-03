@@ -5,9 +5,12 @@ import 'package:http/http.dart' as http;
 import 'package:kazgeowarningmobile/pages/news_page.dart';
 import 'package:kazgeowarningmobile/pages/notifications_page.dart';
 import 'package:kazgeowarningmobile/pages/profile_page.dart';
-import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:mapbox_gl_platform_interface/mapbox_gl_platform_interface.dart';
+import 'dart:ui';
+import 'package:latlong2/latlong.dart';
+
+
+
 class MapRealtimePage extends StatefulWidget {
 
   @override
@@ -29,8 +32,8 @@ class FireRTData {
 }
 
 class _MapRealtimePage extends State<MapRealtimePage> {
-late MapboxMapController mapController;
   var markersData;
+   List<Marker> markers = [];
  
   @override
   void initState() {
@@ -67,26 +70,27 @@ late MapboxMapController mapController;
       }
   }
 
- void onMapCreated(MapboxMapController controller) {
-    mapController = controller;
+void addMarkers() {
+  if (markersData != null) {
+    markers = List<Marker>.from(markersData.map((markerData) {
+      return Marker(
+        width: 20,
+        height: 20,
+        point: LatLng(double.parse(markerData.latitude), double.parse(markerData.longitude)),
+        child: Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            color: Colors.orange.withOpacity(0.5),
+            shape: BoxShape.circle,
+          ),
+        ),
+      );
+    }).toList());
+    setState(() {});
   }
+}
 
-  void addMarkers() {
-    /*for (var markerData in markersData) {
-      try {
-        mapController.addCircle(
-  CircleOptions(
-    geometry: LatLng(double.parse(markerData.latitude), double.parse(markerData.longitude)),
-    circleRadius: 10000, 
-    circleColor: '#FF0000', 
-  ),
-);
-        } catch (e) {
-          print('Error while drawing markers: $e');
-        }
-
-    }*/
-  }
 
 
  @override
@@ -94,7 +98,7 @@ Widget build(BuildContext context) {
   return Scaffold(
     body: Stack(
       children: [
-        MapboxMap(
+        /*MapboxMap(
           styleString: "mapbox://styles/mapbox/satellite-streets-v12",
           initialCameraPosition: CameraPosition(
             target: LatLng(48.0196, 66.9237,),
@@ -102,8 +106,24 @@ Widget build(BuildContext context) {
           ),
           onMapCreated: onMapCreated,
           accessToken: 'sk.eyJ1IjoiZGVhZHBlYXJsIiwiYSI6ImNsdWZhNnJhOTBwOGgyam9jNmQ0MGRnNXAifQ.NrFzF026xXzIPOwr3ppc9g',
-        ),
-        
+        ),*/
+        FlutterMap(
+          options: MapOptions(
+            initialCenter: LatLng(48.0196, 66.9237),
+            initialZoom: 4,
+          ),
+          children: [
+            TileLayer(
+            urlTemplate: 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
+                    additionalOptions: {
+                      'accessToken':'sk.eyJ1IjoiZGVhZHBlYXJsIiwiYSI6ImNsdWZhNnJhOTBwOGgyam9jNmQ0MGRnNXAifQ.NrFzF026xXzIPOwr3ppc9g',
+                      'id': 'mapbox/satellite-streets-v12'
+                    }
+            ),
+            MarkerLayer(markers: markers)
+          
+          ],
+          ),
         
         Positioned(
           top: 60,
