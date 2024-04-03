@@ -27,7 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
       var token = prefs.getString('token');
 
       var response = await http.get(
-        Uri.parse('http://192.168.0.11:8011/internal/api/public/user/v1/token/$token'),
+        Uri.parse('http://192.168.0.63:8011/internal/api/public/user/v1/token/$token'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -356,7 +356,7 @@ Container(
           icon: Padding(
             padding: EdgeInsets.symmetric(vertical: 12.0), // Увеличиваем отступ по вертикали
             child: Image(
-              image: AssetImage('assets/images/notification.png'),
+              image: AssetImage('assets/images/bell_withnot.png'),
               height: 24, // Задаем высоту иконки
             ),
           ),

@@ -28,7 +28,7 @@ class LoginPage extends StatelessWidget {
     try {
       // Отправьте POST-запрос на ваш бэкэнд
       var response = await http.post(
-        Uri.parse('http://192.168.0.11:8011/internal/api/public/user/v1/login'),
+        Uri.parse('http://192.168.0.63:8011/internal/api/public/user/v1/login'),
         body: jsonData,
         headers: {'Content-Type': 'application/json'},
       );
@@ -69,9 +69,9 @@ class LoginPage extends StatelessWidget {
           children: [
             // Первый контейнер
             Container(
-  height: 250,
+  height: 240,
   color: Color(0xFF141C0C),
-  padding: const EdgeInsets.all(16),
+  padding: const EdgeInsets.only(left: 28),
   child: const Row(
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
@@ -79,7 +79,9 @@ class LoginPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image(image: AssetImage('assets/images/Avatar.png')),
+          Row(children: [
+ Image(image: AssetImage('assets/images/Avatar.png')),
+ SizedBox(width: 16),
           Text(
             'KazGeoWarning',
             style: TextStyle(
@@ -87,7 +89,9 @@ class LoginPage extends StatelessWidget {
               fontSize: 20,
             ),
           ),
-          SizedBox(height: 10),
+          ],),
+         
+          SizedBox(height: 20),
           
           Text(
             'Welcome Back!',
@@ -96,6 +100,7 @@ class LoginPage extends StatelessWidget {
               fontSize: 16,
             ),
           ),
+          SizedBox(height: 10),
           Text(
             'Please sign in to your account',
             style: TextStyle(
@@ -112,30 +117,32 @@ class LoginPage extends StatelessWidget {
 
             // Второй контейнер
             Expanded(
+              child: SingleChildScrollView(
               child: Container(
-                color: Colors.grey, // Серый цвет фона
-                padding: EdgeInsets.all(16),
+                color: Colors.white, // Серый цвет фона
+                padding: EdgeInsets.only(left: 16, top: 40),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     MyTextField(
                     controller: usernameController,
                     obscureText: false,
                     labelText: 'Email',
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
                   // password textfield
                   MyTextField(
                     controller: passwordController,
                     obscureText: true,
                     labelText: 'Password',
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 80),
                   MyButton(
                onTap: () => signIn(context), 
               ),
                   ],
                 ),
+              ),
               ),
             ),
           ],

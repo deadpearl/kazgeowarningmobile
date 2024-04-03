@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kazgeowarningmobile/pages/map_realtime_page.dart';
 import 'package:kazgeowarningmobile/pages/profile_page.dart';
 import 'pages/login_page.dart';
 
@@ -13,8 +14,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      //home: LoginPage(),
-      home: ProfilePage(),
+     // home: LoginPage(),
+      //home: ProfilePage(),
+      //home: MapRealtimePage(),
     );
   }
 }
