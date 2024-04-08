@@ -1,15 +1,15 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kazgeowarningmobile/components/my_textfield.dart';
 import 'package:kazgeowarningmobile/pages/news_page.dart';
 import 'package:kazgeowarningmobile/pages/notifications_page.dart';
 import 'package:kazgeowarningmobile/pages/profile_page.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'dart:ui';
 import 'package:latlong2/latlong.dart';
-
-
 
 class MapRealtimePage extends StatefulWidget {
 
@@ -32,6 +32,16 @@ class FireRTData {
 }
 
 class _MapRealtimePage extends State<MapRealtimePage> {
+    final mapTypeController = TextEditingController();
+  final mapPresetController = TextEditingController();
+   final regionController = TextEditingController();
+    final cityAreaController = TextEditingController();
+     final locationController = TextEditingController();
+      final confidenceScaleController = TextEditingController();
+
+DateTime? fromDate; // Дата "From"
+DateTime? toDate;   // Дата "To"
+
   var markersData;
    List<Marker> markers = [];
  
@@ -66,7 +76,7 @@ class _MapRealtimePage extends State<MapRealtimePage> {
       });
     } else {
         // Если запрос неудачен, выведите сообщение об ошибке
-        print('Request failed with status: ${response.statusCode}'); 
+        print('Request failed with status: ${response.statusCode}');
       }
   }
 
@@ -136,10 +146,133 @@ Widget build(BuildContext context) {
               context: context,
               builder: (BuildContext context) {
                 return Container(
-                  height: 200,
-                  color: Colors.white,
+                        decoration: BoxDecoration(
+                          color: Colors.white, // Цвет заливки контейнера
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(30),
+                            topLeft: Radius.circular(30),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 5,
+                              blurRadius: 7,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                          border: Border.all(color: Color(0xFFE8E8E8), width: 2), // Граница контейнера
+                        ),
+                        padding: EdgeInsets.only(right: 40, left: 40, top: 40),
+                  height: 400,
                   child: Center(
-                    child: Text('Bottom Sheet Content'),
+                    
+                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                      'Map Type',
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                      ),
+                    ),
+                      DropdownButtonFormField<String>(
+                        value: mapTypeController.text.isNotEmpty ? mapTypeController.text : null, // Устанавливаем значение, если оно не пустое
+                        onChanged: (String? newValue) {
+                          // Действие при изменении выбранного значения
+                          mapTypeController.text = newValue!;
+                        },
+                        items: <String>['Fire Map', 'Forecast Map']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        decoration: InputDecoration(
+                          labelText: 'Type',
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      Text(
+                      'Light Preset',
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                      ),
+                    ),
+                      DropdownButtonFormField<String>(
+                        value: mapPresetController.text.isNotEmpty ? mapPresetController.text : null, // Устанавливаем значение, если оно не пустое
+                        onChanged: (String? newValue) {
+                          // Действие при изменении выбранного значения
+                          mapPresetController.text = newValue!;
+                        },
+                        items: <String>['Night', 'Light', 'Day', 'Dark']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        decoration: InputDecoration(
+                          labelText: 'Mode',
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: onResetType,
+                            child: Container(
+                              padding: EdgeInsets.only(right: 52, left: 52, top: 10, bottom: 10),
+                              margin: EdgeInsets.only(left: 3),
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "RESET",
+                                  style: TextStyle(
+                                    color:Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: onTypeFilterApply,
+                            child: Container(
+                               padding: EdgeInsets.only(right: 52, left: 52, top: 10, bottom: 10),
+                               margin: EdgeInsets.only(left: 23),
+                              decoration: BoxDecoration(
+                                color: Color(0xFF2A5725),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "APPLY",
+                                  style: TextStyle(
+                                    color:Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+
+
+
                   ),
                 );
               },
@@ -160,14 +293,284 @@ Widget build(BuildContext context) {
               GestureDetector(
                   onTap: () {
             showModalBottomSheet(
+              isScrollControlled: true,
               context: context,
               builder: (BuildContext context) {
-                return Container(
-                  height: 200,
-                  color: Colors.white,
+                return FractionallySizedBox(
+                heightFactor: 0.9,
+                child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white, // Цвет заливки контейнера
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(30),
+                            topLeft: Radius.circular(30),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 5,
+                              blurRadius: 7,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                          border: Border.all(color: Color(0xFFE8E8E8), width: 2), // Граница контейнера
+                        ),
+                        padding: EdgeInsets.only(right: 40, left: 40, top: 20),
+                        height: 700,
                   child: Center(
-                    child: Text('Bottom Sheet Content'),
+                    
+                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                     Text(
+                      'Time Period',
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                      ),
+                    ),
+                   /* Expanded(
+      child: TextButton(
+        onPressed: () {
+         datatTimePicker.DatePicker.showDatePicker(
+            context,
+            showTitleActions: true,
+            onChanged: (date) {
+              print('change $date');
+            },
+            onConfirm: (date) {
+              print('confirm $date');
+              setState(() {
+                fromDate = date;
+              });
+            },
+            currentTime: DateTime.now(),
+          );
+        },
+        child: Text(
+          fromDate != null ? '${fromDate!.day}/${fromDate!.month}/${fromDate!.year}' : 'Select Date',
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+      ),
+    ),
+    SizedBox(width: 20),*/
+  /* Expanded(
+      child: TextButton(
+        onPressed: () {
+          datatTimePicker.DatePicker.showDatePicker(
+            context,
+            onConfirm: (date) {
+              print('confirm $date');
+              setState(() {
+                fromDate = date;
+              });
+            },
+          );
+        },
+        child: Text(
+          fromDate != null ? '${fromDate!.day}/${fromDate!.month}/${fromDate!.year}' : 'Select Date',
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+      ),
+    ),
+    SizedBox(width: 20),*/
+   /* Expanded(
+      child: TextButton(
+        onPressed: () {
+          datatTimePicker.DatePicker.showDatePicker(
+            context,
+            onConfirm: (date) {
+              print('confirm $date');
+              setState(() {
+                toDate = date;
+              });
+            },
+          );
+        },
+        child: Text(
+          toDate != null ? '${toDate!.day}/${toDate!.month}/${toDate!.year}' : 'Select Date',
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+      ),
+    ),*/
+                              Expanded(
+                                child: TextField(
+                                  decoration: InputDecoration(
+                                    labelText: 'To',
+                                  ),
+                                ),
+                              ),
+                          SizedBox(height: 15),
+                      Text(
+                        'Region',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                        ),
+                      ),
+                      DropdownButtonFormField<String>(
+                        value: regionController.text.isNotEmpty ? regionController.text : null,
+                        onChanged: (String? newValue) {
+                          regionController.text = newValue!;
+                        },
+                        items: <String>['Region 1', 'Region 2', 'Region 3']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        decoration: InputDecoration(
+                          labelText: 'Region',
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        'Location',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                        ),
+                      ),
+                      DropdownButtonFormField<String>(
+                        value: locationController.text.isNotEmpty ? locationController.text : null,
+                        onChanged: (String? newValue) {
+                          locationController.text = newValue!;
+                        },
+                        items: <String>['Location 1', 'Location 2', 'Location 3']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        decoration: InputDecoration(
+                          labelText: 'Location',
+                        ),
+                      ),
+                      SizedBox(height: 15),
+                      Text(
+                        'City/Area',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                        ),
+                      ),
+                      DropdownButtonFormField<String>(
+                        value: cityAreaController.text.isNotEmpty ? cityAreaController.text : null,
+                        onChanged: (String? newValue) {
+                          cityAreaController.text = newValue!;
+                        },
+                        items: <String>['City/Area 1', 'City/Area 2', 'City/Area 3']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        decoration: InputDecoration(
+                          labelText: 'City/Area',
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        'Confidence',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                        ),
+                      ),
+                     Expanded(
+                          child: DropdownButtonFormField<String>(
+                            value: confidenceScaleController.text.isNotEmpty ? confidenceScaleController.text : null,
+                            onChanged: (String? newValue) {
+                              confidenceScaleController.text = newValue!;
+                            },
+                            items: <String>['High', 'Nominal', 'Low']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            decoration: InputDecoration(
+                              labelText: 'Scale',
+                            ),
+                          ),
+                        ),
+
+
+
+
+                      Container(
+                        margin: EdgeInsets.only(bottom: 40, top: 25),
+                      child: Row(
+                        children: [
+                          GestureDetector(
+                            
+                            onTap: onResetType,
+                            child: Container(
+                              padding: EdgeInsets.only(right: 52, left: 52, top: 10, bottom: 10),
+                              margin: EdgeInsets.only(left: 3),
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "RESET",
+                                  style: TextStyle(
+                                    color:Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: onTypeFilterApply,
+                            child: Container(
+                               padding: EdgeInsets.only(right: 52, left: 52, top: 10, bottom: 10),
+                               margin: EdgeInsets.only(left: 23),
+                              decoration: BoxDecoration(
+                                color: Color(0xFF2A5725),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "APPLY",
+                                  style: TextStyle(
+                                    color:Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                      )
+                    ],
                   ),
+
+
+
+                  ),
+                )
                 );
               },
             );
@@ -286,4 +689,14 @@ void _onItemTapped(int index) {
       break;
   }
 }
+
+
+void onTypeFilterApply() {
+
+}
+
+void onResetType() {
+
+}
+
 }
