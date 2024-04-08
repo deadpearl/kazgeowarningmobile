@@ -66,7 +66,7 @@ class _MapRealtimePage extends State<MapRealtimePage> {
       });
     } else {
         // Если запрос неудачен, выведите сообщение об ошибке
-        print('Request failed with status: ${response.statusCode}');
+        print('Request failed with status: ${response.statusCode}'); 
       }
   }
 
@@ -74,8 +74,8 @@ void addMarkers() {
   if (markersData != null) {
     markers = List<Marker>.from(markersData.map((markerData) {
       return Marker(
-        width: 20,
-        height: 20,
+        width: 10,
+        height: 10,
         point: LatLng(double.parse(markerData.latitude), double.parse(markerData.longitude)),
         child: Container(
           width: 80,
