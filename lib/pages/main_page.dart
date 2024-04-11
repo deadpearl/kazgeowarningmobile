@@ -1,12 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:kazgeowarningmobile/components/my_button.dart';
-import 'package:kazgeowarningmobile/components/my_textfield.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:kazgeowarningmobile/pages/login_page.dart';
-import 'package:kazgeowarningmobile/pages/profile_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MainPage extends StatelessWidget {
   MainPage({super.key});
