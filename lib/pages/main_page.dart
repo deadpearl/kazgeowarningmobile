@@ -4,6 +4,7 @@ import 'package:kazgeowarningmobile/components/my_button.dart';
 import 'package:kazgeowarningmobile/components/my_textfield.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:kazgeowarningmobile/pages/login_page.dart';
 import 'package:kazgeowarningmobile/pages/profile_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -134,7 +135,13 @@ Align(
                 SizedBox(height: 20),
                 
                 GestureDetector(
-      onTap: onTap,
+       onTap: () {
+                  // Обработчик события нажатия, например, навигация на другую страницу
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                  );
+                },
       child: Container(
         padding: const EdgeInsets.all(15),
         margin: const EdgeInsets.symmetric(horizontal: 30),
@@ -167,8 +174,5 @@ Align(
       ),
     );
   }
-  
-void onTap() {
- 
-}
+
 }

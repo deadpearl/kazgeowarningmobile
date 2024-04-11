@@ -5,6 +5,7 @@ import 'package:kazgeowarningmobile/components/my_textfield.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:kazgeowarningmobile/pages/profile_page.dart';
+import 'package:kazgeowarningmobile/pages/signup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatelessWidget {
@@ -140,11 +141,30 @@ class LoginPage extends StatelessWidget {
                   MyButton(
                onTap: () => signIn(context), 
               ),
-                  ],
+              const SizedBox(height: 30),
+              GestureDetector(
+                onTap: () {
+                  // Обработчик события нажатия, например, навигация на другую страницу
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SignUpPage()),
+                  );
+                },
+                child: Text(
+                  'Not registered yet? Sign up.',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ],
                 ),
               ),
               ),
             ),
+        
           ],
         ),
       ),
