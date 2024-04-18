@@ -29,7 +29,7 @@ class LoginPage extends StatelessWidget {
     try {
       // Отправьте POST-запрос на ваш бэкэнд
       var response = await http.post(
-        Uri.parse('http://192.168.0.63:8011/internal/api/public/user/v1/login'),
+        Uri.parse('http://192.168.0.12:8011/internal/api/public/user/v1/login'),
         body: jsonData,
         headers: {'Content-Type': 'application/json'},
       );
@@ -40,7 +40,7 @@ class LoginPage extends StatelessWidget {
         var responseData = jsonDecode(response.body);
         var token = responseData['token'];
         var email = responseData['email'];
-
+        saveToken(email);
         // Сохраняем токен в SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('token', token);
@@ -61,6 +61,26 @@ class LoginPage extends StatelessWidget {
     }
   }
 
+void saveToken(email) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+  var deviceToken = prefs.getString('deviceToken');
+      var deviceTokenDTO = {
+        'deviceToken': deviceToken,
+        'userEmail': email
+      };
+      var jsonData = jsonEncode(deviceTokenDTO);
+      try {
+        final response = await http.post(
+          Uri.parse(
+              'http://192.168.0.12:8011/internal/api/notification/service/save-device-token'),
+          body: jsonData,
+          headers: {'Content-Type': 'application/json'},
+        );
+        print(response);
+      } catch (e) {
+        print('Ошибка при отправке токена на сервер: $e');
+      }
+}
 
    @override
   Widget build(BuildContext context) {
