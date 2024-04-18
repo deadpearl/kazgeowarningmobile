@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "28700519320",
+    "project_id": "kazgeowarning",
+    "storage_bucket": "kazgeowarning.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:28700519320:android:288ae13bdcfc9c86ad19ed",
+        "android_client_info": {
+          "package_name": "com.example.kazgeowarningmobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlYiw3B03b2LwGcKqzaqo27yPACjUEskU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
