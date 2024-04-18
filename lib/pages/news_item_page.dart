@@ -7,7 +7,6 @@ import 'package:kazgeowarningmobile/pages/news_page.dart';
 import 'package:kazgeowarningmobile/pages/notifications_page.dart';
 import 'package:kazgeowarningmobile/pages/profile_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'news_page.dart';
 
 class NewsItemPage extends StatefulWidget {
    final int notificationId;

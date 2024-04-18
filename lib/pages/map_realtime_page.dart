@@ -1,16 +1,21 @@
 import 'dart:convert';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:kazgeowarningmobile/components/my_textfield.dart';
 import 'package:kazgeowarningmobile/pages/news_page.dart';
 import 'package:kazgeowarningmobile/pages/notifications_page.dart';
 import 'package:kazgeowarningmobile/pages/profile_page.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'dart:ui';
 import 'package:latlong2/latlong.dart';
 import 'package:intl/intl.dart';
+
+//when press apply close the popup
+//add colors to markers
+//when press the marker show popup
+//get regions 
+//profile functionlatiy
+//notifications popup and change the icon to right one
+//when tap on notification open the notification item page
+
 
 class MapRealtimePage extends StatefulWidget {
   @override
