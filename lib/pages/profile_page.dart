@@ -28,7 +28,7 @@ class _ProfilePageState extends State<ProfilePage> {
       var token = prefs.getString('token');
 
       var response = await http.get(
-        Uri.parse('http://192.168.0.63:8011/internal/api/public/user/v1/token/$token'),
+        Uri.parse('http://192.168.0.12:8011/internal/api/public/user/v1/token/$token'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -58,18 +58,20 @@ Widget build(BuildContext context) {
 
 Container(
     height: 320,
+     width: double.infinity,
   color:const Color(0xFFDFDFDF),
   child: Stack(
     children: [
       // Фото внутри контейнера
       Image.asset(
         'assets/images/profile_back.png', // Путь к изображению
-        fit: BoxFit.cover, // Заполнение контейнера
+        fit: BoxFit.cover,
+        width: double.infinity, // Заполнение контейнера
       ),
       // Фото поверх контейнера
       Positioned(
         top: 120, // Положение по вертикали
-        left: 90, // Положение по горизонтали
+        left: 100, // Положение по горизонтали
         child: ClipRRect(
   borderRadius: BorderRadius.circular(100), // Установите радиус закругления здесь
   child: CachedNetworkImage(
