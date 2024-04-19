@@ -9,8 +9,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:intl/intl.dart';
 
-//when press apply close the popup
-//add colors to markers
 //when press the marker show popup
 //get regions
 //profile functionlatiy
@@ -34,6 +32,14 @@ class FireRTData {
     required this.acqDate,
     required this.confidence,
   });
+}
+
+class City {
+  final String name;
+  final double latitude;
+  final double longitude;
+
+  City(this.name, this.latitude, this.longitude);
 }
 
 class FireForecastData {
@@ -62,6 +68,39 @@ class _MapRealtimePage extends State<MapRealtimePage> {
   late TextEditingController _fromDateController = TextEditingController();
   late TextEditingController _toDateController = TextEditingController();
   late String tileLayerUrl = '';
+  City? defaultCity = null;
+
+  final List<City> cities = [
+    City('Almaty', 43.25667, 76.92861),
+    City('Shymkent', 42.3, 69.6),
+    City('Taraz', 42.9, 71.36667),
+    City('Pavlodar', 52.28333, 76.96667),
+    City('Ust-Kamenogorsk', 49.97143, 82.60586),
+    City('Kyzylorda', 44.85278, 65.50917),
+    City('Semey', 50.42675, 80.26669),
+    City('Aktobe', 50.27969, 57.20718),
+    City('Karagandy', 49.80187, 73.10211),
+    City('Kostanay', 53.21435, 63.62463),
+    City('Oral', 51.23333, 51.36667),
+    City('Atyrau', 47.11667, 51.88333),
+    City('Nur-Sultan', 51.1801, 71.44598),
+    City('Turkestan', 43.29733, 68.25175),
+    City('Kokshetau', 53.28333, 69.4),
+    City('Ekibastuz', 51.72371, 75.32287),
+    City('Taldykorgan', 45.01556, 78.37389),
+    City('Petropavl', 54.86667, 69.15),
+    City('Aksu', 52.04023, 76.92748),
+    City('Temirtau', 50.05494, 72.96464)
+  ];
+
+  City? getCityByName(String name) {
+    for (City city in cities) {
+        if (city.name == name) {
+            return city;
+        }
+    }
+    return null; // Вернуть null, если город не найден
+}
 
   var markersData;
   List<Marker> markers = [];
@@ -121,25 +160,23 @@ class _MapRealtimePage extends State<MapRealtimePage> {
     if (markersData != null) {
       markersData.clear();
     }
-
+    City? selectedCity = getCityByName(regionController.text);
     markers.clear();
     var fireDataDTO = {
-      'regionId':
-          regionController.text.isNotEmpty ? regionController.text : null,
-      'latitude': null,
-      'longitude': null,
+      'regionId': null,
+      'latitude': selectedCity?.latitude, 
+      'longitude': selectedCity?.longitude,
       'dateFrom': _fromDateController.text.isNotEmpty
           ? DateFormat('yyyy-MM-dd').format(fromDate)
           : null,
       'dateTo': _toDateController.text.isNotEmpty
           ? DateFormat('yyyy-MM-dd').format(toDate)
           : null,
-      'timeFrom': null, 
-      'timeTo': null, 
+      'timeFrom': null,
+      'timeTo': null,
       'confidence': confidenceScaleController.text.isNotEmpty
-    ? convertConfidence(confidenceScaleController.text)
-    : null,
-
+          ? convertConfidence(confidenceScaleController.text)
+          : null,
     };
     var jsonData = jsonEncode(fireDataDTO);
     final response = await http.post(
@@ -170,29 +207,28 @@ class _MapRealtimePage extends State<MapRealtimePage> {
   }
 
   String convertConfidence(String confidence) {
-  if (confidence == 'High') {
-    return 'h';
-  } else if (confidence == 'Nominal') {
-    return 'n';
-  } else if (confidence == 'Low') {
-    return 'l';
-  } else {
-    return '';
+    if (confidence == 'High') {
+      return 'h';
+    } else if (confidence == 'Nominal') {
+      return 'n';
+    } else if (confidence == 'Low') {
+      return 'l';
+    } else {
+      return '';
+    }
   }
-}
-
 
   Future<void> onForecastFilterApply() async {
     markers.clear();
     if (markersData != null) {
       markersData.clear();
     }
+    City? selectedCity = getCityByName(regionController.text);
     markers.clear();
     var fireDataDTO = {
-      'regionId':
-          regionController.text.isNotEmpty ? regionController.text : null,
-      'latitude': null,
-      'longitude': null,
+      'regionId': null,
+      'latitude': selectedCity?.latitude,
+      'longitude': selectedCity?.longitude,
       'dateFrom': _fromDateController.text.isNotEmpty
           ? DateFormat('yyyy-MM-dd').format(fromDate)
           : null,
@@ -234,30 +270,29 @@ class _MapRealtimePage extends State<MapRealtimePage> {
     Navigator.of(context).pop();
   }
 
- void addMarkers() {
+  void addMarkers() {
     if (markersData != null) {
-        markers = List<Marker>.from(markersData.map((markerData) {
-            Color markerColor = getMarkerColor(markerData.confidence);
+      markers = List<Marker>.from(markersData.map((markerData) {
+        Color markerColor = getMarkerColor(markerData.confidence);
 
-            return Marker(
-                width: 10,
-                height: 10,
-                point: LatLng(double.parse(markerData.latitude),
-                    double.parse(markerData.longitude)),
-                child: Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                        color: markerColor, 
-                        shape: BoxShape.circle,
-                    ),
-                ),
-            );
-        }).toList());
-        setState(() {});
+        return Marker(
+          width: 10,
+          height: 10,
+          point: LatLng(double.parse(markerData.latitude),
+              double.parse(markerData.longitude)),
+          child: Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: markerColor,
+              shape: BoxShape.circle,
+            ),
+          ),
+        );
+      }).toList());
+      setState(() {});
     }
-}
-
+  }
 
   String getMapStyleUrl(String selectedPreset) {
     switch (selectedPreset.toLowerCase()) {
@@ -276,16 +311,15 @@ class _MapRealtimePage extends State<MapRealtimePage> {
 
   Color getMarkerColor(String confidence) {
     if (confidence == 'n') {
-        return Color(0xFFF77E21).withOpacity(0.8); // Цвет для 'n'
+      return Color(0xFFF77E21).withOpacity(0.8); // Цвет для 'n'
     } else if (confidence == 'h') {
-        return Color(0xFFD61C4E).withOpacity(0.8); // Цвет для 'h'
+      return Color(0xFFD61C4E).withOpacity(0.8); // Цвет для 'h'
     } else if (confidence == 'l') {
-        return Color(0xFFFAC213).withOpacity(0.8); // Цвет для 'l'
+      return Color(0xFFFAC213).withOpacity(0.8); // Цвет для 'l'
     } else {
-        return Colors.orange.withOpacity(0.8); // Цвет по умолчанию
+      return Colors.orange.withOpacity(0.8); // Цвет по умолчанию
     }
-}
-
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -564,97 +598,41 @@ class _MapRealtimePage extends State<MapRealtimePage> {
                                       ),
                                       SizedBox(height: 15),
                                       Text(
-                                        'Region',
+                                        'City',
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
                                           color: Colors.black,
                                           fontSize: 20,
                                         ),
                                       ),
-                                      DropdownButtonFormField<String>(
+                                      DropdownButtonFormField<City>(
                                         value: regionController.text.isNotEmpty
-                                            ? regionController.text
+                                            ? cities.firstWhere(
+                                                (city) =>
+                                                    city.name ==
+                                                    regionController.text,
+                                                orElse: () => defaultCity!,
+                                              )
                                             : null,
-                                        onChanged: (String? newValue) {
-                                          regionController.text = newValue!;
+                                        onChanged: (City? newValue) {
+                                          if (newValue != null) {
+                                            regionController.text =
+                                                newValue.name;
+                                            print(
+                                                'Selected city: ${newValue.name}, Latitude: ${newValue.latitude}, Longitude: ${newValue.longitude}');
+                                            // Вы можете использовать координаты города здесь
+                                          }
                                         },
-                                        items: <String>[
-                                          'Region 1',
-                                          'Region 2',
-                                          'Region 3'
-                                        ].map<DropdownMenuItem<String>>(
-                                            (String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value),
+                                        items: cities
+                                            .map<DropdownMenuItem<City>>(
+                                                (City city) {
+                                          return DropdownMenuItem<City>(
+                                            value: city,
+                                            child: Text(city.name),
                                           );
                                         }).toList(),
                                         decoration: InputDecoration(
-                                          labelText: 'Region',
-                                        ),
-                                      ),
-                                      SizedBox(height: 10),
-                                      Text(
-                                        'Location',
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 20,
-                                        ),
-                                      ),
-                                      DropdownButtonFormField<String>(
-                                        value:
-                                            locationController.text.isNotEmpty
-                                                ? locationController.text
-                                                : null,
-                                        onChanged: (String? newValue) {
-                                          locationController.text = newValue!;
-                                        },
-                                        items: <String>[
-                                          'Location 1',
-                                          'Location 2',
-                                          'Location 3'
-                                        ].map<DropdownMenuItem<String>>(
-                                            (String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value),
-                                          );
-                                        }).toList(),
-                                        decoration: InputDecoration(
-                                          labelText: 'Location',
-                                        ),
-                                      ),
-                                      SizedBox(height: 15),
-                                      Text(
-                                        'City/Area',
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 20,
-                                        ),
-                                      ),
-                                      DropdownButtonFormField<String>(
-                                        value:
-                                            cityAreaController.text.isNotEmpty
-                                                ? cityAreaController.text
-                                                : null,
-                                        onChanged: (String? newValue) {
-                                          cityAreaController.text = newValue!;
-                                        },
-                                        items: <String>[
-                                          'City/Area 1',
-                                          'City/Area 2',
-                                          'City/Area 3'
-                                        ].map<DropdownMenuItem<String>>(
-                                            (String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value),
-                                          );
-                                        }).toList(),
-                                        decoration: InputDecoration(
-                                          labelText: 'City/Area',
+                                          labelText: 'City',
                                         ),
                                       ),
                                       SizedBox(height: 10),
@@ -831,97 +809,41 @@ class _MapRealtimePage extends State<MapRealtimePage> {
                                       ),
                                       SizedBox(height: 15),
                                       Text(
-                                        'Region',
+                                        'City',
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
                                           color: Colors.black,
                                           fontSize: 20,
                                         ),
                                       ),
-                                      DropdownButtonFormField<String>(
+                                      DropdownButtonFormField<City>(
                                         value: regionController.text.isNotEmpty
-                                            ? regionController.text
+                                            ? cities.firstWhere(
+                                                (city) =>
+                                                    city.name ==
+                                                    regionController.text,
+                                                orElse: () => defaultCity!,
+                                              )
                                             : null,
-                                        onChanged: (String? newValue) {
-                                          regionController.text = newValue!;
+                                        onChanged: (City? newValue) {
+                                          if (newValue != null) {
+                                            regionController.text =
+                                                newValue.name;
+                                            print(
+                                                'Selected city: ${newValue.name}, Latitude: ${newValue.latitude}, Longitude: ${newValue.longitude}');
+                                            // Вы можете использовать координаты города здесь
+                                          }
                                         },
-                                        items: <String>[
-                                          'Region 1',
-                                          'Region 2',
-                                          'Region 3'
-                                        ].map<DropdownMenuItem<String>>(
-                                            (String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value),
+                                        items: cities
+                                            .map<DropdownMenuItem<City>>(
+                                                (City city) {
+                                          return DropdownMenuItem<City>(
+                                            value: city,
+                                            child: Text(city.name),
                                           );
                                         }).toList(),
                                         decoration: InputDecoration(
-                                          labelText: 'Region',
-                                        ),
-                                      ),
-                                      SizedBox(height: 10),
-                                      Text(
-                                        'Location',
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 20,
-                                        ),
-                                      ),
-                                      DropdownButtonFormField<String>(
-                                        value:
-                                            locationController.text.isNotEmpty
-                                                ? locationController.text
-                                                : null,
-                                        onChanged: (String? newValue) {
-                                          locationController.text = newValue!;
-                                        },
-                                        items: <String>[
-                                          'Location 1',
-                                          'Location 2',
-                                          'Location 3'
-                                        ].map<DropdownMenuItem<String>>(
-                                            (String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value),
-                                          );
-                                        }).toList(),
-                                        decoration: InputDecoration(
-                                          labelText: 'Location',
-                                        ),
-                                      ),
-                                      SizedBox(height: 15),
-                                      Text(
-                                        'City/Area',
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 20,
-                                        ),
-                                      ),
-                                      DropdownButtonFormField<String>(
-                                        value:
-                                            cityAreaController.text.isNotEmpty
-                                                ? cityAreaController.text
-                                                : null,
-                                        onChanged: (String? newValue) {
-                                          cityAreaController.text = newValue!;
-                                        },
-                                        items: <String>[
-                                          'City/Area 1',
-                                          'City/Area 2',
-                                          'City/Area 3'
-                                        ].map<DropdownMenuItem<String>>(
-                                            (String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value),
-                                          );
-                                        }).toList(),
-                                        decoration: InputDecoration(
-                                          labelText: 'City/Area',
+                                          labelText: 'City',
                                         ),
                                       ),
                                       SizedBox(height: 10),
