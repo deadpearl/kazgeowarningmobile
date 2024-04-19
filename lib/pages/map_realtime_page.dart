@@ -24,12 +24,14 @@ class FireRTData {
   final String longitude;
   final DateTime acqDate;
   final String confidence;
+  final String region;
 
   FireRTData({
     required this.latitude,
     required this.longitude,
     required this.acqDate,
     required this.confidence,
+    required this.region
   });
 }
 
@@ -53,12 +55,14 @@ class FireForecastData {
   final String longitude;
   final DateTime acqDate;
   final String dangerLevel;
+  final String region;
 
   FireForecastData({
     required this.latitude,
     required this.longitude,
     required this.acqDate,
     required this.dangerLevel,
+    required this.region
   });
 }
 
@@ -242,6 +246,7 @@ class _MapRealtimePage extends State<MapRealtimePage> {
                   longitude: json['longitude'],
                   acqDate: DateTime.parse(json['acqDate']),
                   confidence: json['confidence'],
+                   region: json['regionId']['name_eng']
                 ))
             .toList();
         addMarkers();
@@ -262,6 +267,17 @@ class _MapRealtimePage extends State<MapRealtimePage> {
       return 'l';
     } else {
       return '';
+    }
+  }
+  String convertConfidenceBackwards(String confidence) {
+    if (confidence == 'h') {
+      return 'High';
+    } else if (confidence == 'n') {
+      return 'Nominal';
+    } else if (confidence == 'l') {
+      return 'Low';
+    } else {
+      return 'Undefined';
     }
   }
 
@@ -306,6 +322,7 @@ class _MapRealtimePage extends State<MapRealtimePage> {
                   longitude: json['stationId']['longitude'],
                   acqDate: DateTime.parse(json['time']),
                   dangerLevel: json['dangerLevel'],
+                  region: json['regionId']['name_eng']
                 ))
             .toList();
         addMarkers();
@@ -317,29 +334,56 @@ class _MapRealtimePage extends State<MapRealtimePage> {
     Navigator.of(context).pop();
   }
 
-  void addMarkers() {
+void addMarkers() {
     if (markersData != null) {
-      markers = List<Marker>.from(markersData.map((markerData) {
-        Color markerColor = getMarkerColor(markerData.confidence);
+        markers = List<Marker>.from(markersData.map((markerData) {
+            // Получите цвет маркера на основе уверенности
+            Color markerColor = getMarkerColor(markerData.confidence);
 
-        return Marker(
-          width: 10,
-          height: 10,
-          point: LatLng(double.parse(markerData.latitude),
-              double.parse(markerData.longitude)),
-          child: Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: markerColor,
-              shape: BoxShape.circle,
-            ),
-          ),
-        );
-      }).toList());
-      setState(() {});
+            // Создаем маркер
+            return Marker(
+                width: 10,  // Задаем ширину маркера
+                height: 10, // Задаем высоту маркера
+                point: LatLng(double.parse(markerData.latitude),
+                    double.parse(markerData.longitude)),
+                child: GestureDetector(
+                    onTap: () {
+                        // При нажатии на маркер, показываем всплывающее окно (popup)
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                                return AlertDialog(
+                                    title: Text('Marker Info'),
+                                    content: Text(
+                                        'Latitude: ${markerData.latitude}\nLongitude: ${markerData.longitude}\nConfidence: ${convertConfidenceBackwards(markerData.confidence)}\nRegion: ${markerData.region}',
+                                    ),
+                                    actions: [
+                                        TextButton(
+                                            onPressed: () {
+                                                // Закрываем всплывающее окно
+                                                Navigator.of(context).pop();
+                                            },
+                                            child: Text('Close'),
+                                        ),
+                                    ],
+                                );
+                            },
+                        );
+                    },
+                    child: Container(
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                            color: markerColor,
+                            shape: BoxShape.circle,
+                        ),
+                    ),
+                ),
+            );
+        }).toList());
+        setState(() {});
     }
-  }
+}
 
   String getMapStyleUrl(String selectedPreset) {
     switch (selectedPreset.toLowerCase()) {
@@ -583,7 +627,7 @@ class _MapRealtimePage extends State<MapRealtimePage> {
                         context: context,
                         builder: (BuildContext context) {
                           return FractionallySizedBox(
-                              heightFactor: 0.7,
+                              heightFactor: 0.75,
                               child: Container(
                                 decoration: BoxDecoration(
                                   color:
