@@ -19,7 +19,6 @@ class NotificationItemPage extends StatefulWidget {
 
 class _NotificationItemPage extends State<NotificationItemPage> {
   var notification;
- int _selectedIndex = -1;
  
  
   @override

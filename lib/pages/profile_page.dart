@@ -15,7 +15,6 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   var userData;
- int _selectedIndex = -1;
   @override
   void initState() {
     super.initState();

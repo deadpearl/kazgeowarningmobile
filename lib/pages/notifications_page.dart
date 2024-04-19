@@ -31,7 +31,6 @@ class NotificationsPage extends StatefulWidget {
 class _NotificationsPage extends State<NotificationsPage> {
   List<AlertNotification> notifications = [];
   var userData;
-  int _selectedIndex = -1;
 
   @override
   void initState() {

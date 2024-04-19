@@ -35,7 +35,6 @@ class _NewsPage extends State<NewsPage> {
   List<News> filteredNews = [];
   List<News> news = [];
   var userData;
- int _selectedIndex = -1;
  
   @override
   void initState() {
