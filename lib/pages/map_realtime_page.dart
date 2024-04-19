@@ -10,7 +10,6 @@ import 'package:latlong2/latlong.dart';
 import 'package:intl/intl.dart';
 
 //when press the marker show popup
-//get regions
 //profile functionlatiy
 //when tap on notification open the notification item page
 //signup functionality
@@ -42,6 +41,13 @@ class City {
   City(this.name, this.latitude, this.longitude);
 }
 
+class Region {
+  final String regionId;
+  final String name;
+
+  Region(this.regionId, this.name);
+}
+
 class FireForecastData {
   final String latitude;
   final String longitude;
@@ -67,8 +73,10 @@ class _MapRealtimePage extends State<MapRealtimePage> {
   final dangerLevelToController = TextEditingController();
   late TextEditingController _fromDateController = TextEditingController();
   late TextEditingController _toDateController = TextEditingController();
+  final TextEditingController regionsController = TextEditingController();
   late String tileLayerUrl = '';
   City? defaultCity = null;
+  Region defaultRegion = Region('UNK', 'Undetected Region');
 
   final List<City> cities = [
     City('Almaty', 43.25667, 76.92861),
@@ -93,14 +101,52 @@ class _MapRealtimePage extends State<MapRealtimePage> {
     City('Temirtau', 50.05494, 72.96464)
   ];
 
+  final List<Region> regions = [
+    Region('ABA', 'Abay Region'),
+    Region('AKM', 'Akmola Region'),
+    Region('AKT', 'Aqtöbe Region'),
+    Region('ALA', 'Almaty'),
+    Region('ALM', 'Almaty Region'),
+    Region('AST', 'Astana'),
+    Region('ATY', 'Atyrau Region'),
+    Region('VOS', 'East Kazakhstan Region'),
+    Region('ZHA', 'Jambyl Region'),
+    Region('ZHE', 'Jetisu Region'),
+    Region('KAR', 'Karaganda Region'),
+    Region('KUS', 'Kostanay Region'),
+    Region('KZY', 'Kyzylorda Region'),
+    Region('MAN', 'Mangystau Region'),
+    Region('SEV', 'North Kazakhstan Region'),
+    Region('PAV', 'Pavlodar Region'),
+    Region('SHY', 'Shymkent'),
+    Region('TUR', 'Turkistan Region'),
+    Region('YUZ', 'Ulytau Region'),
+    Region('ZAP', 'West Kazakhstan Region'),
+    Region('UNK', 'Undetected Region'),
+  ];
+
   City? getCityByName(String name) {
     for (City city in cities) {
-        if (city.name == name) {
-            return city;
-        }
+      if (city.name == name) {
+        return city;
+      }
     }
     return null; // Вернуть null, если город не найден
-}
+  }
+
+  Region? findRegionByIdOrName(String? query) {
+    if (query == null) {
+      return null;
+    }
+
+    for (Region region in regions) {
+      if (region.regionId == query || region.name == query) {
+        return region;
+      }
+    }
+
+    return null;
+  }
 
   var markersData;
   List<Marker> markers = [];
@@ -161,10 +207,11 @@ class _MapRealtimePage extends State<MapRealtimePage> {
       markersData.clear();
     }
     City? selectedCity = getCityByName(regionController.text);
+    Region? selectedRegion = findRegionByIdOrName(regionsController.text);
     markers.clear();
     var fireDataDTO = {
-      'regionId': null,
-      'latitude': selectedCity?.latitude, 
+      'regionId': selectedRegion?.regionId,
+      'latitude': selectedCity?.latitude,
       'longitude': selectedCity?.longitude,
       'dateFrom': _fromDateController.text.isNotEmpty
           ? DateFormat('yyyy-MM-dd').format(fromDate)
@@ -536,7 +583,7 @@ class _MapRealtimePage extends State<MapRealtimePage> {
                         context: context,
                         builder: (BuildContext context) {
                           return FractionallySizedBox(
-                              heightFactor: 0.9,
+                              heightFactor: 0.7,
                               child: Container(
                                 decoration: BoxDecoration(
                                   color:
@@ -633,6 +680,42 @@ class _MapRealtimePage extends State<MapRealtimePage> {
                                         }).toList(),
                                         decoration: InputDecoration(
                                           labelText: 'City',
+                                        ),
+                                      ),
+                                      SizedBox(height: 15),
+                                      Text(
+                                        'Region',
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                      DropdownButtonFormField<Region>(
+                                        value: regionsController.text.isNotEmpty
+                                            ? regions.firstWhere(
+                                                (region) =>
+                                                    region.regionId ==
+                                                    regionsController.text,
+                                                orElse: () => defaultRegion,
+                                              )
+                                            : null,
+                                        onChanged: (Region? newValue) {
+                                          if (newValue != null) {
+                                            regionsController.text =
+                                                newValue.regionId;
+                                          }
+                                        },
+                                        items: regions
+                                            .map<DropdownMenuItem<Region>>(
+                                                (Region region) {
+                                          return DropdownMenuItem<Region>(
+                                            value: region,
+                                            child: Text(region.name),
+                                          );
+                                        }).toList(),
+                                        decoration: InputDecoration(
+                                          labelText: 'Region',
                                         ),
                                       ),
                                       SizedBox(height: 10),
@@ -747,7 +830,7 @@ class _MapRealtimePage extends State<MapRealtimePage> {
                         context: context,
                         builder: (BuildContext context) {
                           return FractionallySizedBox(
-                              heightFactor: 0.97,
+                              heightFactor: 0.8,
                               child: Container(
                                 decoration: BoxDecoration(
                                   color:
@@ -844,6 +927,42 @@ class _MapRealtimePage extends State<MapRealtimePage> {
                                         }).toList(),
                                         decoration: InputDecoration(
                                           labelText: 'City',
+                                        ),
+                                      ),
+                                      SizedBox(height: 15),
+                                      Text(
+                                        'Region',
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                      DropdownButtonFormField<Region>(
+                                        value: regionsController.text.isNotEmpty
+                                            ? regions.firstWhere(
+                                                (region) =>
+                                                    region.regionId ==
+                                                    regionsController.text,
+                                                orElse: () => defaultRegion,
+                                              )
+                                            : null,
+                                        onChanged: (Region? newValue) {
+                                          if (newValue != null) {
+                                            regionsController.text =
+                                                newValue.regionId;
+                                          }
+                                        },
+                                        items: regions
+                                            .map<DropdownMenuItem<Region>>(
+                                                (Region region) {
+                                          return DropdownMenuItem<Region>(
+                                            value: region,
+                                            child: Text(region.name),
+                                          );
+                                        }).toList(),
+                                        decoration: InputDecoration(
+                                          labelText: 'Region',
                                         ),
                                       ),
                                       SizedBox(height: 10),
