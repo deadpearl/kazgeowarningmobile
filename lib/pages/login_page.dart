@@ -4,6 +4,7 @@ import 'package:kazgeowarningmobile/components/my_button.dart';
 import 'package:kazgeowarningmobile/components/my_textfield.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:kazgeowarningmobile/pages/api_constans.dart';
 import 'package:kazgeowarningmobile/pages/profile_page.dart';
 import 'package:kazgeowarningmobile/pages/signup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,7 +30,7 @@ class LoginPage extends StatelessWidget {
     try {
       // Отправьте POST-запрос на ваш бэкэнд
       var response = await http.post(
-        Uri.parse('http://192.168.0.12:8011/internal/api/public/user/v1/login'),
+        Uri.parse('$baseUrl/internal/api/public/user/v1/login'),
         body: jsonData,
         headers: {'Content-Type': 'application/json'},
       );
@@ -72,7 +73,7 @@ void saveToken(email) async {
       try {
         final response = await http.post(
           Uri.parse(
-              'http://192.168.0.12:8011/internal/api/notification/service/save-device-token'),
+              '$baseUrl/internal/api/notification/service/save-device-token'),
           body: jsonData,
           headers: {'Content-Type': 'application/json'},
         );

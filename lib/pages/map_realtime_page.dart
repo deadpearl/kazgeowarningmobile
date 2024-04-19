@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kazgeowarningmobile/pages/api_constans.dart';
 import 'package:kazgeowarningmobile/pages/news_page.dart';
 import 'package:kazgeowarningmobile/pages/notifications_page.dart';
 import 'package:kazgeowarningmobile/pages/profile_page.dart';
@@ -13,7 +14,6 @@ import 'package:intl/intl.dart';
 //when press the marker show popup
 //get regions 
 //profile functionlatiy
-//notifications popup and change the icon to right one
 //when tap on notification open the notification item page
 
 
@@ -133,7 +133,7 @@ class _MapRealtimePage extends State<MapRealtimePage> {
     var jsonData = jsonEncode(fireDataDTO);
     final response = await http.post(
       Uri.parse(
-          'http://192.168.0.63:8011/internal/api/data/RTData/getByFilter'),
+          '$baseUrl/internal/api/data/RTData/getByFilter'),
       body: jsonData,
       headers: {'Content-Type': 'application/json'},
     );
@@ -178,7 +178,7 @@ class _MapRealtimePage extends State<MapRealtimePage> {
     var jsonData = jsonEncode(fireDataDTO);
     final response = await http.post(
       Uri.parse(
-          'http://192.168.0.63:8011/internal/api/data/ForecastData/getByFilter'),
+          '$baseUrl/internal/api/data/ForecastData/getByFilter'),
       body: jsonData,
       headers: {'Content-Type': 'application/json'},
     );

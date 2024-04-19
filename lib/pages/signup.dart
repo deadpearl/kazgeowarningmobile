@@ -4,6 +4,7 @@ import 'package:kazgeowarningmobile/components/my_button.dart';
 import 'package:kazgeowarningmobile/components/my_textfield.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:kazgeowarningmobile/pages/api_constans.dart';
 import 'package:kazgeowarningmobile/pages/login_page.dart';
 import 'package:kazgeowarningmobile/pages/profile_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,7 +42,7 @@ void goToNextPage() {
     try {
       // Отправьте POST-запрос на ваш бэкэнд
       var response = await http.post(
-        Uri.parse('http://192.168.0.63:8011/internal/api/public/user/v1/login'),
+        Uri.parse('$baseUrl/internal/api/public/user/v1/login'),
         body: jsonData,
         headers: {'Content-Type': 'application/json'},
       );

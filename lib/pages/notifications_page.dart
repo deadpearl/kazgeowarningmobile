@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kazgeowarningmobile/pages/api_constans.dart';
 import 'package:kazgeowarningmobile/pages/map_realtime_page.dart';
 import 'package:kazgeowarningmobile/pages/news_page.dart';
 import 'package:kazgeowarningmobile/pages/notification_item_page.dart';
@@ -47,7 +48,7 @@ class _NotificationsPage extends State<NotificationsPage> {
 
     final response = await http.get(
       Uri.parse(
-          'http://192.168.0.63:8011/internal/api/notification/service/all?email=$email'),
+          '$baseUrl/internal/api/notification/service/all?email=$email'),
       headers: headers,
     );
     print(response);

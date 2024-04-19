@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kazgeowarningmobile/pages/api_constans.dart';
 import 'package:kazgeowarningmobile/pages/map_realtime_page.dart';
 import 'package:kazgeowarningmobile/pages/news_page.dart';
 import 'package:kazgeowarningmobile/pages/notifications_page.dart';
@@ -28,7 +29,7 @@ class _ProfilePageState extends State<ProfilePage> {
       var token = prefs.getString('token');
 
       var response = await http.get(
-        Uri.parse('http://192.168.0.12:8011/internal/api/public/user/v1/token/$token'),
+        Uri.parse('$baseUrl/internal/api/public/user/v1/token/$token'),
         headers: {'Content-Type': 'application/json'},
       );
 

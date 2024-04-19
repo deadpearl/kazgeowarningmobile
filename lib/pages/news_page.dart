@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kazgeowarningmobile/pages/api_constans.dart';
 import 'package:kazgeowarningmobile/pages/map_realtime_page.dart';
 import 'package:kazgeowarningmobile/pages/news_item_page.dart';
 import 'package:kazgeowarningmobile/pages/notifications_page.dart';
@@ -63,7 +64,7 @@ void onSearchTextChanged(String text) {
   final Map<String, String> headers = {'x-auth-token': token!};
 
   final response = await http.get(
-    Uri.parse('http://192.168.0.63:8011/internal/api/news'),
+    Uri.parse('$baseUrl/internal/api/news'),
     headers: headers,
   );
   

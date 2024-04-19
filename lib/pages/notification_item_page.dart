@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kazgeowarningmobile/pages/api_constans.dart';
 import 'package:kazgeowarningmobile/pages/map_realtime_page.dart';
 import 'package:kazgeowarningmobile/pages/news_page.dart';
 import 'package:kazgeowarningmobile/pages/profile_page.dart';
@@ -37,7 +38,7 @@ class _NotificationItemPage extends State<NotificationItemPage> {
       final Map<String, String> headers = {'x-auth-token': token!};
   
       final response = await http.get(
-        Uri.parse('http://192.168.0.63:8011/internal/api/notification/service/get-by-id?id=${widget.notificationId}&notificationType=${widget.notificationType}'),
+        Uri.parse('$baseUrl/internal/api/notification/service/get-by-id?id=${widget.notificationId}&notificationType=${widget.notificationType}'),
         headers: headers,
       );
     print(response);
@@ -69,7 +70,7 @@ Future<void> markReportAsSeen(int id) async {
   final Map<String, String> headers = {'x-auth-token': token!};
 
   final response = await http.put(
-    Uri.parse('http://192.168.0.63:8011/internal/api/notification/service/report/seen/$id'),
+    Uri.parse('$baseUrl/internal/api/notification/service/report/seen/$id'),
     headers: headers,
   );
   if (response.statusCode == 200) {
@@ -86,7 +87,7 @@ Future<void> markAlertAsSeen(int id) async {
   final Map<String, String> headers = {'x-auth-token': token!};
 
   final response = await http.put(
-    Uri.parse('http://192.168.0.63:8011/internal/api/notification/service/alert/seen/$id'),
+    Uri.parse('$baseUrl/internal/api/notification/service/alert/seen/$id'),
     headers: headers,
   );
   if (response.statusCode == 200) {
