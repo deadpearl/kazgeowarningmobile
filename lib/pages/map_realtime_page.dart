@@ -12,10 +12,10 @@ import 'package:intl/intl.dart';
 //when press apply close the popup
 //add colors to markers
 //when press the marker show popup
-//get regions 
+//get regions
 //profile functionlatiy
 //when tap on notification open the notification item page
-
+//signup functionality
 
 class MapRealtimePage extends StatefulWidget {
   @override
@@ -58,7 +58,7 @@ class _MapRealtimePage extends State<MapRealtimePage> {
   final locationController = TextEditingController();
   final confidenceScaleController = TextEditingController();
   final dangerLevelFromController = TextEditingController();
-   final dangerLevelToController = TextEditingController();
+  final dangerLevelToController = TextEditingController();
   late TextEditingController _fromDateController = TextEditingController();
   late TextEditingController _toDateController = TextEditingController();
   late String tileLayerUrl = '';
@@ -118,22 +118,32 @@ class _MapRealtimePage extends State<MapRealtimePage> {
   }
 
   Future<void> onRealTimeFilterApply() async {
-    markersData.clear();
-     markers.clear();
+    if (markersData != null) {
+      markersData.clear();
+    }
+
+    markers.clear();
     var fireDataDTO = {
-  'regionId': regionController.text.isNotEmpty ? regionController.text : null,
-  'latitude':  null,
-  'longitude':  null,
-  'dateFrom': _fromDateController.text.isNotEmpty ? DateFormat('yyyy-MM-dd').format(fromDate) : null,
-  'dateTo': _toDateController.text.isNotEmpty ? DateFormat('yyyy-MM-dd').format(toDate) : null,
-  'timeFrom': null, // Время не указано в форме, оставляем null
-  'timeTo': null, // Время не указано в форме, оставляем null
-  'confidence': confidenceScaleController.text.isNotEmpty ? confidenceScaleController.text : null,
-};
+      'regionId':
+          regionController.text.isNotEmpty ? regionController.text : null,
+      'latitude': null,
+      'longitude': null,
+      'dateFrom': _fromDateController.text.isNotEmpty
+          ? DateFormat('yyyy-MM-dd').format(fromDate)
+          : null,
+      'dateTo': _toDateController.text.isNotEmpty
+          ? DateFormat('yyyy-MM-dd').format(toDate)
+          : null,
+      'timeFrom': null, 
+      'timeTo': null, 
+      'confidence': confidenceScaleController.text.isNotEmpty
+    ? convertConfidence(confidenceScaleController.text)
+    : null,
+
+    };
     var jsonData = jsonEncode(fireDataDTO);
     final response = await http.post(
-      Uri.parse(
-          '$baseUrl/internal/api/data/RTData/getByFilter'),
+      Uri.parse('$baseUrl/internal/api/data/RTData/getByFilter'),
       body: jsonData,
       headers: {'Content-Type': 'application/json'},
     );
@@ -156,29 +166,49 @@ class _MapRealtimePage extends State<MapRealtimePage> {
       // Если запрос неудачен, выведите сообщение об ошибке
       print('Request failed with status: ${response.statusCode}');
     }
+    Navigator.of(context).pop();
   }
 
-
-
-   Future<void> onForecastFilterApply() async {
-     markers.clear();
-     if (markersData != null) {
-    markersData.clear();
+  String convertConfidence(String confidence) {
+  if (confidence == 'High') {
+    return 'h';
+  } else if (confidence == 'Nominal') {
+    return 'n';
+  } else if (confidence == 'Low') {
+    return 'l';
+  } else {
+    return '';
   }
-  markers.clear();
+}
+
+
+  Future<void> onForecastFilterApply() async {
+    markers.clear();
+    if (markersData != null) {
+      markersData.clear();
+    }
+    markers.clear();
     var fireDataDTO = {
-  'regionId': regionController.text.isNotEmpty ? regionController.text : null,
-  'latitude':  null,
-  'longitude':  null,
-  'dateFrom': _fromDateController.text.isNotEmpty ? DateFormat('yyyy-MM-dd').format(fromDate) : null,
-  'dateTo': _toDateController.text.isNotEmpty ? DateFormat('yyyy-MM-dd').format(toDate) : null,
-  'dangerLevelFrom':dangerLevelFromController.text.isNotEmpty ? dangerLevelFromController.text : null,
-  'dangerLevelTo': dangerLevelToController.text.isNotEmpty ? dangerLevelToController.text : null,
-};
+      'regionId':
+          regionController.text.isNotEmpty ? regionController.text : null,
+      'latitude': null,
+      'longitude': null,
+      'dateFrom': _fromDateController.text.isNotEmpty
+          ? DateFormat('yyyy-MM-dd').format(fromDate)
+          : null,
+      'dateTo': _toDateController.text.isNotEmpty
+          ? DateFormat('yyyy-MM-dd').format(toDate)
+          : null,
+      'dangerLevelFrom': dangerLevelFromController.text.isNotEmpty
+          ? dangerLevelFromController.text
+          : null,
+      'dangerLevelTo': dangerLevelToController.text.isNotEmpty
+          ? dangerLevelToController.text
+          : null,
+    };
     var jsonData = jsonEncode(fireDataDTO);
     final response = await http.post(
-      Uri.parse(
-          '$baseUrl/internal/api/data/ForecastData/getByFilter'),
+      Uri.parse('$baseUrl/internal/api/data/ForecastData/getByFilter'),
       body: jsonData,
       headers: {'Content-Type': 'application/json'},
     );
@@ -201,29 +231,33 @@ class _MapRealtimePage extends State<MapRealtimePage> {
       // Если запрос неудачен, выведите сообщение об ошибке
       print('Request failed with status: ${response.statusCode}');
     }
+    Navigator.of(context).pop();
   }
 
-  void addMarkers() {
+ void addMarkers() {
     if (markersData != null) {
-      markers = List<Marker>.from(markersData.map((markerData) {
-        return Marker(
-          width: 30,
-          height: 30,
-          point: LatLng(double.parse(markerData.latitude),
-              double.parse(markerData.longitude)),
-          child: Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              color: Colors.orange.withOpacity(0.8),
-              shape: BoxShape.circle,
-            ),
-          ),
-        );
-      }).toList());
-      setState(() {});
+        markers = List<Marker>.from(markersData.map((markerData) {
+            Color markerColor = getMarkerColor(markerData.confidence);
+
+            return Marker(
+                width: 10,
+                height: 10,
+                point: LatLng(double.parse(markerData.latitude),
+                    double.parse(markerData.longitude)),
+                child: Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                        color: markerColor, 
+                        shape: BoxShape.circle,
+                    ),
+                ),
+            );
+        }).toList());
+        setState(() {});
     }
-  }
+}
+
 
   String getMapStyleUrl(String selectedPreset) {
     switch (selectedPreset.toLowerCase()) {
@@ -239,6 +273,19 @@ class _MapRealtimePage extends State<MapRealtimePage> {
         return 'mapbox/satellite-streets-v12';
     }
   }
+
+  Color getMarkerColor(String confidence) {
+    if (confidence == 'n') {
+        return Color(0xFFF77E21).withOpacity(0.8); // Цвет для 'n'
+    } else if (confidence == 'h') {
+        return Color(0xFFD61C4E).withOpacity(0.8); // Цвет для 'h'
+    } else if (confidence == 'l') {
+        return Color(0xFFFAC213).withOpacity(0.8); // Цвет для 'l'
+    } else {
+        return Colors.orange.withOpacity(0.8); // Цвет по умолчанию
+    }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -273,7 +320,7 @@ class _MapRealtimePage extends State<MapRealtimePage> {
           ),
           Positioned(
             top: 60,
-            left: 40,
+            left: 50,
             child: Row(
               children: [
                 GestureDetector(
@@ -448,7 +495,8 @@ class _MapRealtimePage extends State<MapRealtimePage> {
                 SizedBox(width: 210),
                 GestureDetector(
                   onTap: () {
-                    if (mapTypeController.text == 'Fire Map' || mapTypeController.text == '') {
+                    if (mapTypeController.text == 'Fire Map' ||
+                        mapTypeController.text == '') {
                       showModalBottomSheet(
                         isScrollControlled: true,
                         context: context,
@@ -715,13 +763,8 @@ class _MapRealtimePage extends State<MapRealtimePage> {
                               ));
                         },
                       );
-                    } 
-                    
-                    
-                    
-                    
-                    else if (mapTypeController.text == 'Forecast Map') {
-                          showModalBottomSheet(
+                    } else if (mapTypeController.text == 'Forecast Map') {
+                      showModalBottomSheet(
                         isScrollControlled: true,
                         context: context,
                         builder: (BuildContext context) {
@@ -1144,6 +1187,7 @@ class _MapRealtimePage extends State<MapRealtimePage> {
     setState(() {
       tileLayerUrl = mapStyleUrl;
     });
+    Navigator.of(context).pop();
   }
 
   void onResetType() {}
