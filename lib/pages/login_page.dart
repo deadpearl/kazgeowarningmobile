@@ -9,8 +9,13 @@ import 'package:kazgeowarningmobile/pages/profile_page.dart';
 import 'package:kazgeowarningmobile/pages/signup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPage createState() => _LoginPage();
+}
+
+class _LoginPage extends State<LoginPage> {
 
   // text editing controllers
   final usernameController = TextEditingController();
@@ -85,8 +90,8 @@ void saveToken(email) async {
 
    @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return
+       Scaffold(
         body: Column(
           children: [
             // Первый контейнер
@@ -127,7 +132,7 @@ void saveToken(email) async {
             'Please sign in to your account',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 24,
+              fontSize: 21,
             ),
           ),
           
@@ -172,6 +177,7 @@ void saveToken(email) async {
                   );
                 },
                 child: Text(
+                  textAlign: TextAlign.center,
                   'Not registered yet? Sign up.',
                   style: TextStyle(
                     color: Colors.black,
@@ -188,7 +194,6 @@ void saveToken(email) async {
         
           ],
         ),
-      ),
-    );
+      );
   }
 }

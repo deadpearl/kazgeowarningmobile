@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:kazgeowarningmobile/pages/main_page.dart';
 import 'package:kazgeowarningmobile/pages/map_realtime_page.dart';
+import 'package:kazgeowarningmobile/pages/notifications_page.dart';
 import 'package:kazgeowarningmobile/pages/profile_page.dart';
 import 'package:kazgeowarningmobile/pages/signup.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -129,10 +130,12 @@ class _MyAppState extends State<MyApp> {
      child: MaterialApp(
       debugShowCheckedModeBanner: false,
        //home: LoginPage(),
-      home: ProfilePage(),
+      //home: ProfilePage(),
+      home: NotificationsPage(),
       //home: MapRealtimePage(),
       //home: MainPage()
       //home: SignUpPage()
+
     )
     );
   }

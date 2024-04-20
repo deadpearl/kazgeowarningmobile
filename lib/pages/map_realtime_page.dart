@@ -9,7 +9,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:intl/intl.dart';
 
-//when press the marker show popup
 //profile functionlatiy
 //when tap on notification open the notification item page
 //signup functionality
@@ -443,10 +442,12 @@ void addMarkers() {
               MarkerLayer(markers: markers)
             ],
           ),
-          Positioned(
-            top: 60,
-            left: 50,
-            child: Row(
+          Align(
+  alignment: Alignment.topCenter, // Позиционируем `Row` сверху по центру
+  child: Padding(
+    padding: const EdgeInsets.only(top: 60,left:30, right:30), // Отступ сверху
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 GestureDetector(
                   onTap: () {
@@ -544,62 +545,50 @@ void addMarkers() {
                                   ),
                                 ),
                                 const SizedBox(height: 30),
-                                Row(
-                                  children: [
-                                    GestureDetector(
-                                      onTap: onResetType,
-                                      child: Container(
-                                        padding: EdgeInsets.only(
-                                            right: 52,
-                                            left: 52,
-                                            top: 10,
-                                            bottom: 10),
-                                        margin: EdgeInsets.only(left: 3),
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey,
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: const Center(
-                                          child: Text(
-                                            "RESET",
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: onTypeFilterApply,
-                                      child: Container(
-                                        padding: EdgeInsets.only(
-                                            right: 52,
-                                            left: 52,
-                                            top: 10,
-                                            bottom: 10),
-                                        margin: EdgeInsets.only(left: 23),
-                                        decoration: BoxDecoration(
-                                          color: Color(0xFF2A5725),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: const Center(
-                                          child: Text(
-                                            "APPLY",
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                )
+                               Row(
+  mainAxisAlignment: MainAxisAlignment.center, // Выравнивание по центру
+  children: [
+    GestureDetector(
+      onTap: onResetType,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10), // Уменьшенные отступы
+        margin: EdgeInsets.only(left: 3),
+        decoration: BoxDecoration(
+          color: Colors.grey,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: const Text(
+          "RESET",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 12,
+          ),
+        ),
+      ),
+    ),
+    SizedBox(width: 16), // Пространство между кнопками
+    GestureDetector(
+      onTap: onTypeFilterApply,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10), // Уменьшенные отступы
+        decoration: BoxDecoration(
+          color: Color(0xFF2A5725),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: const Text(
+          "APPLY",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 12,
+          ),
+        ),
+      ),
+    ),
+  ],
+)
+
                               ],
                             ),
                           ),
@@ -617,7 +606,6 @@ void addMarkers() {
                     child: Image.asset('assets/images/map.png'),
                   ),
                 ),
-                SizedBox(width: 210),
                 GestureDetector(
                   onTap: () {
                     if (mapTypeController.text == 'Fire Map' ||
@@ -627,7 +615,7 @@ void addMarkers() {
                         context: context,
                         builder: (BuildContext context) {
                           return FractionallySizedBox(
-                              heightFactor: 0.75,
+                              heightFactor: 0.85,
                               child: Container(
                                 decoration: BoxDecoration(
                                   color:
@@ -801,67 +789,57 @@ void addMarkers() {
                                           margin: EdgeInsets.only(
                                               bottom: 40, top: 25),
                                           child: Row(
-                                            children: [
-                                              GestureDetector(
-                                                onTap: onResetType,
-                                                child: Container(
-                                                  padding: EdgeInsets.only(
-                                                      right: 52,
-                                                      left: 52,
-                                                      top: 10,
-                                                      bottom: 10),
-                                                  margin:
-                                                      EdgeInsets.only(left: 3),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.grey,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8),
-                                                  ),
-                                                  child: const Center(
-                                                    child: Text(
-                                                      "RESET",
-                                                      style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 12,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              GestureDetector(
-                                                onTap: onRealTimeFilterApply,
-                                                child: Container(
-                                                  padding: EdgeInsets.only(
-                                                      right: 52,
-                                                      left: 52,
-                                                      top: 10,
-                                                      bottom: 10),
-                                                  margin:
-                                                      EdgeInsets.only(left: 23),
-                                                  decoration: BoxDecoration(
-                                                    color: Color(0xFF2A5725),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8),
-                                                  ),
-                                                  child: const Center(
-                                                    child: Text(
-                                                      "APPLY",
-                                                      style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 12,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ))
+  mainAxisAlignment: MainAxisAlignment.center, // Центрирование элементов в `Row`
+  children: [
+    Flexible(
+      child: GestureDetector(
+        onTap: onResetType,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10), // Уменьшенные отступы
+          decoration: BoxDecoration(
+            color: Colors.grey,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Center(
+            child: Text(
+              "RESET",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+    SizedBox(width: 10), // Промежуток между кнопками
+    Flexible(
+      child: GestureDetector(
+        onTap: onRealTimeFilterApply,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10), // Уменьшенные отступы
+          margin: EdgeInsets.only(left: 10),
+          decoration: BoxDecoration(
+            color: Color(0xFF2A5725),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Center(
+            child: Text(
+              "APPLY",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  ],
+)
+)
                                     ],
                                   ),
                                 ),
@@ -874,7 +852,7 @@ void addMarkers() {
                         context: context,
                         builder: (BuildContext context) {
                           return FractionallySizedBox(
-                              heightFactor: 0.8,
+                              heightFactor: 0.85,
                               child: Container(
                                 decoration: BoxDecoration(
                                   color:
@@ -1088,67 +1066,58 @@ void addMarkers() {
                                           margin: EdgeInsets.only(
                                               bottom: 40, top: 25),
                                           child: Row(
-                                            children: [
-                                              GestureDetector(
-                                                onTap: onResetType,
-                                                child: Container(
-                                                  padding: EdgeInsets.only(
-                                                      right: 52,
-                                                      left: 52,
-                                                      top: 10,
-                                                      bottom: 10),
-                                                  margin:
-                                                      EdgeInsets.only(left: 3),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.grey,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8),
-                                                  ),
-                                                  child: const Center(
-                                                    child: Text(
-                                                      "RESET",
-                                                      style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 12,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              GestureDetector(
-                                                onTap: onForecastFilterApply,
-                                                child: Container(
-                                                  padding: EdgeInsets.only(
-                                                      right: 52,
-                                                      left: 52,
-                                                      top: 10,
-                                                      bottom: 10),
-                                                  margin:
-                                                      EdgeInsets.only(left: 23),
-                                                  decoration: BoxDecoration(
-                                                    color: Color(0xFF2A5725),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8),
-                                                  ),
-                                                  child: const Center(
-                                                    child: Text(
-                                                      "APPLY",
-                                                      style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 12,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ))
+  mainAxisAlignment: MainAxisAlignment.center, // Центрирование виджетов в Row
+  children: [
+    Flexible(
+      child: GestureDetector(
+        onTap: onResetType,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          margin: EdgeInsets.only(left: 3),
+          decoration: BoxDecoration(
+            color: Colors.grey,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Center(
+            child: Text(
+              "RESET",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+    SizedBox(width: 10), // Промежуток между кнопками
+    Flexible(
+      child: GestureDetector(
+        onTap: onForecastFilterApply,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          margin: EdgeInsets.only(left: 10),
+          decoration: BoxDecoration(
+            color: Color(0xFF2A5725),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Center(
+            child: Text(
+              "APPLY",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  ],
+),
+)
                                     ],
                                   ),
                                 ),
@@ -1169,6 +1138,7 @@ void addMarkers() {
                 ),
               ],
             ),
+  )
           ),
         ],
       ),
